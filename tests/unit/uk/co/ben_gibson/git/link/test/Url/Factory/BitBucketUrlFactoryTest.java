@@ -1,23 +1,17 @@
 package uk.co.ben_gibson.git.link.test.Url.Factory;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
-import org.junit.Test;
 import uk.co.ben_gibson.git.link.Git.Branch;
 import uk.co.ben_gibson.git.link.Git.Commit;
 import uk.co.ben_gibson.git.link.Git.Exception.RemoteException;
 import uk.co.ben_gibson.git.link.Git.File;
+import uk.co.ben_gibson.git.link.UI.LineSelection;
 import uk.co.ben_gibson.git.link.Url.Factory.BitBucketUrlFactory;
 import uk.co.ben_gibson.git.link.Url.Factory.UrlFactory;
 import java.net.MalformedURLException;
 
 public class BitBucketUrlFactoryTest extends UrlFactoryTest
 {
-    @Test
-    public void testCanDetermineIfFileAtCommitIsSupported()
-    {
-        assertTrue(this.remoteUrlFactory().canOpenFileAtCommit());
-    }
-
 
     @DataProvider
     public static Object[][] commitProvider() throws MalformedURLException, RemoteException
@@ -54,8 +48,16 @@ public class BitBucketUrlFactoryTest extends UrlFactoryTest
                 mockRemote("https://bitbucket.org/foo/bar"),
                 new File("src/Bar.java", "Bar.java"),
                 new Commit("f7c244eeea9f8e4ebbeabc1500b90e656f5d0328"),
-                10,
-                "https://bitbucket.org/foo/bar/src/f7c244eeea9f8e4ebbeabc1500b90e656f5d0328/src/Bar.java#Bar.java-10"
+                new LineSelection(10),
+                "https://bitbucket.org/foo/bar/src/f7c244eeea9f8e4ebbeabc1500b90e656f5d0328/src/Bar.java#lines-10"
+            },
+            {
+                new BitBucketUrlFactory(),
+                mockRemote("https://bitbucket.org/foo/bar"),
+                new File("src/Bar.java", "Bar.java"),
+                new Commit("f7c244eeea9f8e4ebbeabc1500b90e656f5d0328"),
+                new LineSelection(10, 20),
+                "https://bitbucket.org/foo/bar/src/f7c244eeea9f8e4ebbeabc1500b90e656f5d0328/src/Bar.java#lines-10:20"
             },
         };
     }
@@ -70,8 +72,16 @@ public class BitBucketUrlFactoryTest extends UrlFactoryTest
                 mockRemote("https://bitbucket.org/foo/bar/"),
                 new File("src/Bar.java", "Bar.java"),
                 Branch.master(),
-                10,
-                "https://bitbucket.org/foo/bar/src/HEAD/src/Bar.java?at=master#Bar.java-10"
+                new LineSelection(10),
+                "https://bitbucket.org/foo/bar/src/HEAD/src/Bar.java?at=master#lines-10"
+            },
+            {
+                new BitBucketUrlFactory(),
+                mockRemote("https://bitbucket.org/foo/bar/"),
+                new File("src/Bar.java", "Bar.java"),
+                Branch.master(),
+                new LineSelection(10, 20),
+                "https://bitbucket.org/foo/bar/src/HEAD/src/Bar.java?at=master#lines-10:20"
             },
             {
                 new BitBucketUrlFactory(),

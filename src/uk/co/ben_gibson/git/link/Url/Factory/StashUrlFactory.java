@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.co.ben_gibson.git.link.Git.*;
 import uk.co.ben_gibson.git.link.Git.Exception.RemoteException;
+import uk.co.ben_gibson.git.link.UI.LineSelection;
 import uk.co.ben_gibson.git.link.Url.Factory.Exception.UrlFactoryException;
 
 import java.net.URL;
@@ -27,7 +28,7 @@ public class StashUrlFactory extends AbstractUrlFactory
         @NotNull Remote remote,
         @NotNull File file,
         @NotNull Branch branch,
-        @Nullable Integer lineNumber
+        @Nullable LineSelection lineSelection
     ) throws UrlFactoryException, RemoteException
     {
         String[] parts = this.getParts(remote.url());
@@ -39,8 +40,8 @@ public class StashUrlFactory extends AbstractUrlFactory
         String query = String.format("at=refs/heads/%s", branch.toString());
         String fragment = null;
 
-        if (lineNumber != null) {
-            fragment = lineNumber.toString();
+        if (lineSelection != null) {
+            fragment = Integer.toString(lineSelection.start());
         }
 
         return this.buildURL(remote, path, query, fragment);
@@ -48,7 +49,12 @@ public class StashUrlFactory extends AbstractUrlFactory
 
 
     @Override
-    public URL createUrlToFileAtCommit(@NotNull Remote remote, @NotNull File file, @NotNull Commit commit, @Nullable Integer lineNumber) throws UrlFactoryException, RemoteException
+    public URL createUrlToFileAtCommit(
+        @NotNull Remote remote,
+        @NotNull File file,
+        @NotNull Commit commit,
+        @Nullable LineSelection lineSelection
+    ) throws UrlFactoryException, RemoteException
     {
         String[] parts = this.getParts(remote.url());
 
@@ -59,8 +65,8 @@ public class StashUrlFactory extends AbstractUrlFactory
         String query = String.format("at=%s", commit.hash());
         String fragment = null;
 
-        if (lineNumber != null) {
-            fragment = lineNumber.toString();
+        if (lineSelection != null) {
+            fragment = Integer.toString(lineSelection.start());
         }
 
         return this.buildURL(remote, path, query, fragment);
@@ -84,12 +90,5 @@ public class StashUrlFactory extends AbstractUrlFactory
         }
 
         return parts;
-    }
-
-
-    @Override
-    public boolean canOpenFileAtCommit()
-    {
-        return true;
     }
 }

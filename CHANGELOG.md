@@ -102,3 +102,8 @@ All Notable changes to `GitLink` will be documented in this file
 - Added support for hosts Giea and Gogs. #80
 - Removed copy link action.
 - Code base cleanup.
+
+## 3.1.0 - 2019-01-20
+
+- Add support for multiline selection. #77
+

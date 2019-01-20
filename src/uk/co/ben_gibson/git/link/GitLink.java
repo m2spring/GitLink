@@ -15,6 +15,7 @@ import uk.co.ben_gibson.git.link.Git.Commit;
 import uk.co.ben_gibson.git.link.Git.Repository;
 import uk.co.ben_gibson.git.link.Git.RepositoryFactory;
 import uk.co.ben_gibson.git.link.UI.ExceptionRenderer;
+import uk.co.ben_gibson.git.link.UI.LineSelection;
 import uk.co.ben_gibson.git.link.Url.Factory.*;
 import uk.co.ben_gibson.git.link.Url.Modifier.UrlModifier;
 import uk.co.ben_gibson.git.link.Url.Modifier.UrlModifierProvider;
@@ -46,7 +47,7 @@ public class GitLink
         @NotNull Project project,
         @NotNull VirtualFile file,
         @Nullable Commit commit,
-        @Nullable Integer caretPosition
+        @Nullable LineSelection lineSelection
     ) {
         try {
             Preferences preferences = Preferences.getInstance(project);
@@ -62,19 +63,21 @@ public class GitLink
 
                         URL url;
 
-                        if (!urlFactory.canOpenFileAtCommit() || (commit == null && !repository.isCurrentCommitOnRemote())) {
-                            url = urlFactory.createUrlToFileOnBranch(
-                                repository.remote(),
-                                repository.repositoryFileFromVirtualFile(file),
-                                repository.currentBranch(),
-                                caretPosition
-                            );
-                        } else {
+                        // If we have explicitly been given a commit or the current commit exists on the remote
+                        // repository then open the file at that commit otherwise use the branch.
+                        if (commit != null || repository.isCurrentCommitOnRemote()) {
                             url = urlFactory.createUrlToFileAtCommit(
                                 repository.remote(),
                                 repository.repositoryFileFromVirtualFile(file),
                                 Objects.requireNonNull((commit != null) ? commit : repository.currentCommit()),
-                                caretPosition
+                                lineSelection
+                            );
+                        } else {
+                            url = urlFactory.createUrlToFileOnBranch(
+                                repository.remote(),
+                                repository.repositoryFileFromVirtualFile(file),
+                                repository.currentBranch(),
+                                lineSelection
                             );
                         }
 
